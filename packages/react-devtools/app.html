@@ -259,6 +259,8 @@
           if (element) {
             element.innerText = status;
           }
+          if(status === "DevTools initialized." && getTree)
+            getTree().then(renderTree => console.log(renderTree));
         })
         .startServer(port, host, options);
     </script>

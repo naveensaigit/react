@@ -253,15 +253,17 @@ function initialize(socket: WebSocket) {
   ((bridge: any): FrontendBridge).addListener('shutdown', () => {
     socket.close();
   });
+  global.bridge = bridge;
 
   store = new Store(bridge, {
     checkBridgeProtocolCompatibility: true,
     supportsNativeInspection: false,
   });
+  global.store = store;
 
   log('Connected');
   statusListener('DevTools initialized.', 'devtools-connected');
-  reload();
+  // reload();
 }
 
 let startServerTimeoutID: TimeoutID | null = null;

@@ -170,6 +170,8 @@ export function inspectElement({
   });
 }
 
+global.inspectElement = inspectElement;
+
 export function clearCacheForTests(): void {
   inspectedElementCache.reset();
 }
