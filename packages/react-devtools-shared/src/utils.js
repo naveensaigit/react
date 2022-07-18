@@ -35,7 +35,6 @@ import {
   TREE_OPERATION_UPDATE_ERRORS_OR_WARNINGS,
   TREE_OPERATION_UPDATE_TREE_BASE_DURATION,
 } from './constants';
-import {ElementTypeRoot} from 'react-devtools-shared/src/types';
 import {
   LOCAL_STORAGE_FILTER_PREFERENCES_KEY,
   LOCAL_STORAGE_OPEN_IN_EDITOR_URL,
@@ -44,13 +43,21 @@ import {
   LOCAL_STORAGE_SHOW_INLINE_WARNINGS_AND_ERRORS_KEY,
   LOCAL_STORAGE_HIDE_CONSOLE_LOGS_IN_STRICT_MODE,
 } from './constants';
-import {ComponentFilterElementType, ElementTypeHostComponent} from './types';
 import {
+  ComponentFilterElementType,
   ElementTypeClass,
-  ElementTypeForwardRef,
+  ElementTypeContext,
   ElementTypeFunction,
+  ElementTypeForwardRef,
+  ElementTypeHostComponent,
   ElementTypeMemo,
-} from 'react-devtools-shared/src/types';
+  ElementTypeOtherOrUnknown,
+  ElementTypeProfiler,
+  ElementTypeRoot,
+  ElementTypeSuspense,
+  ElementTypeSuspenseList,
+  ElementTypeTracingMarker
+} from './types';
 import {localStorageGetItem, localStorageSetItem} from './storage';
 import {meta} from './hydration';
 import isArray from './isArray';

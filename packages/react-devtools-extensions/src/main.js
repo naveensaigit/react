@@ -5,6 +5,7 @@ import {flushSync} from 'react-dom';
 import {createRoot} from 'react-dom/client';
 import Bridge from 'react-devtools-shared/src/bridge';
 import Store from 'react-devtools-shared/src/devtools/store';
+// import {inspectElement} from 'react-devtools-shared/src/inspectedElementMutableSource';
 import {getBrowserName, getBrowserTheme} from './utils';
 import {LOCAL_STORAGE_TRACE_UPDATES_ENABLED_KEY} from 'react-devtools-shared/src/constants';
 import {registerDevToolsEventLogger} from 'react-devtools-shared/src/registerDevToolsEventLogger';
@@ -231,6 +232,7 @@ function createPanelIfReactLoaded() {
             // Ask the renderer interface to determine the component function,
             // and store it as a global variable on the window
             bridge.send('viewElementSource', {id, rendererID});
+            bridge.send('logElementToConsole', {id: 5, rendererID: 1});
 
             setTimeout(() => {
               // Ask Chrome to display the location of the component function,

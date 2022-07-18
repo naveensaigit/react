@@ -101,6 +101,61 @@ export default function ComponentsSettings(_: {||}) {
           value: ElementTypeHostComponent,
           isEnabled: true,
         },
+        {
+          type: ComponentFilterElementType,
+          value: ElementTypeClass,
+          isEnabled: true,
+        },
+        {
+          type: ComponentFilterElementType,
+          value: ElementTypeContext,
+          isEnabled: true,
+        },
+        {
+          type: ComponentFilterElementType,
+          value: ElementTypeForwardRef,
+          isEnabled: true,
+        },
+        {
+          type: ComponentFilterElementType,
+          value: ElementTypeHostComponent,
+          isEnabled: true,
+        },
+        {
+          type: ComponentFilterElementType,
+          value: ElementTypeMemo,
+          isEnabled: true,
+        },
+        {
+          type: ComponentFilterElementType,
+          value: ElementTypeOtherOrUnknown,
+          isEnabled: true,
+        },
+        {
+          type: ComponentFilterElementType,
+          value: ElementTypeProfiler,
+          isEnabled: true,
+        },
+        {
+          type: ComponentFilterElementType,
+          value: ElementTypeRoot,
+          isEnabled: true,
+        },
+        {
+          type: ComponentFilterElementType,
+          value: ElementTypeSuspense,
+          isEnabled: true,
+        },
+        {
+          type: ComponentFilterElementType,
+          value: ElementTypeSuspenseList,
+          isEnabled: true,
+        },
+        {
+          type: ComponentFilterElementType,
+          value: ElementTypeTracingMarker,
+          isEnabled: true,
+        }
       ];
     });
   }, []);

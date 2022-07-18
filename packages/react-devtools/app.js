@@ -51,7 +51,30 @@ app.on('ready', function() {
     // We use this so that RN can keep relative JSX __source filenames
     // but "click to open in editor" still works. js1 passes project roots
     // as the argument to DevTools.
-    'window.devtools.setProjectRoots(' + JSON.stringify(projectRoots) + ')',
+    `window.devtools.setProjectRoots(' + JSON.stringify(projectRoots) + ');
+    // window.localStorage.removeItem("React::DevTools::componentFilters");
+    async function getTree() {
+      if(store === undefined) {
+        console.log("Tree not rendered completely. Please try in sometime!");
+        return setTimeout(() => getTree(), 100);
+      }
+      let renderTree = {}, promises = [];
+      for(let element of store._idToElement.values()) {
+        const rendererID = store.getRendererIDForElement(element.id);
+        promises.push(inspectElement({bridge, element, path: null, rendererID}));
+        renderTree[element.id] = {
+          name: element.displayName || "root",
+          path: undefined,
+          children: element.children
+        }
+      }
+      Promise.all(promises).then(values => {
+        for(let value of values)
+          if(value && value[0])
+            renderTree[value[0].id].path = value[0]?.source?.fileName;
+        console.log(renderTree);
+      });
+    }`,
   );
 
   // Emitted when the window is closed.
