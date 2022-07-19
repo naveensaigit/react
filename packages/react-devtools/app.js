@@ -25,12 +25,14 @@ app.on('ready', function() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    show: false,
     icon: join(__dirname, 'icons/icon128.png'),
     frame: false,
     //titleBarStyle: 'customButtonsOnHover',
     webPreferences: {
       nodeIntegration: true,
       nodeIntegrationInWorker: true,
+      enableRemoteModule: true,
     },
   });
 
@@ -58,7 +60,7 @@ app.on('ready', function() {
         if(store.revision > revision)
           resolve(new Map(store._idToElement));
         else
-          return setTimeout(() => resolve(matchingComponents(store, revision)), 50);
+          return setTimeout(() => resolve(matchingComponents(store, revision)), 100);
       });
       return promise;
     }
@@ -142,12 +144,12 @@ app.on('ready', function() {
       ];
 
       let rev = store.revision;
-      bridge.send('updateComponentFilters', onlyFuncComps);
       let reqTree = await matchingComponents(store, rev);
+      bridge.send('updateComponentFilters', onlyFuncComps);
 
       rev = store.revision;
-      bridge.send('updateComponentFilters', allComps);
       let fullTree = await matchingComponents(store, rev);
+      bridge.send('updateComponentFilters', allComps);
 
       let renderTree = {}, promises = [], getSources = [], sourcePromises = [];
 
