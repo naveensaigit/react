@@ -261,12 +261,12 @@
             element.innerText = status;
           }
           if(status === "DevTools initialized." && getTree)
-            getTree().then(renderTree => {
-              fs.writeFile("temp.json", JSON.stringify(renderTree, undefined, 2), err => {
+            setTimeout(() => getTree().then(renderTree => {
+              fs.writeFile("renderTree.json", JSON.stringify(renderTree, undefined, 2), err => {
                 if(!err)
                   remote.getCurrentWindow().close();
               });
-            });
+            }), 1000);
         })
         .startServer(port, host, options);
     </script>

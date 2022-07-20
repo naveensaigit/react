@@ -35,6 +35,7 @@ app.on('ready', function() {
       enableRemoteModule: true,
     },
   });
+  mainWindow.webContents.openDevTools();
 
   // set dock icon for macos
   if (os.platform() === 'darwin') {
@@ -137,14 +138,12 @@ app.on('ready', function() {
         }
       ];
 
-      let rev = store.revision;
-      bridge.send('updateComponentFilters', onlyFuncComps);
-      let delay = await delayExec(1000);
+      store._bridge.send('updateComponentFilters', onlyFuncComps);
+      let delay = await delayExec(200);
       let reqTree = new Map(store._idToElement);
 
-      rev = store.revision;
-      bridge.send('updateComponentFilters', allComps);
-      delay = await delayExec(1000);
+      store._bridge.send('updateComponentFilters', allComps);
+      delay = await delayExec(200);
       let fullTree = new Map(store._idToElement);
 
       let renderTree = {}, promises = [], getSources = [], sourcePromises = [];
