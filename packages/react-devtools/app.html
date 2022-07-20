@@ -263,8 +263,8 @@
           if(status === "DevTools initialized." && getTree)
             getTree().then(renderTree => {
               fs.writeFile("temp.json", JSON.stringify(renderTree, undefined, 2), err => {
-                // if(!err)
-                //   setTimeout(() => remote.getCurrentWindow().close(), 2000);
+                if(!err)
+                  remote.getCurrentWindow().close();
               });
             });
         })
