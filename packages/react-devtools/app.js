@@ -55,14 +55,8 @@ app.on('ready', function() {
     // as the argument to DevTools.
     `window.devtools.setProjectRoots(' + JSON.stringify(projectRoots) + ')
 
-    function matchingComponents(store, revision) {
-      const promise = new Promise((resolve, _) => {
-        if(store.revision > revision)
-          resolve(new Map(store._idToElement));
-        else
-          return setTimeout(() => resolve(matchingComponents(store, revision)), 100);
-      });
-      return promise;
+    function delayExec(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     function getParentSource(parents) {
@@ -144,12 +138,14 @@ app.on('ready', function() {
       ];
 
       let rev = store.revision;
-      let reqTree = await matchingComponents(store, rev);
       bridge.send('updateComponentFilters', onlyFuncComps);
+      let delay = await delayExec(1000);
+      let reqTree = new Map(store._idToElement);
 
       rev = store.revision;
-      let fullTree = await matchingComponents(store, rev);
       bridge.send('updateComponentFilters', allComps);
+      delay = await delayExec(1000);
+      let fullTree = new Map(store._idToElement);
 
       let renderTree = {}, promises = [], getSources = [], sourcePromises = [];
 
