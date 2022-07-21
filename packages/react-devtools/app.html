@@ -157,7 +157,7 @@
     </div>
     <script>
       const fs = require('fs');
-      const remote = require('electron').remote;
+      const path = require('path');
       let options;
       let useHttps = false;
 
@@ -174,7 +174,7 @@
         options = undefined;
       }
 
-      const {clipboard} = require("electron");
+      const {remote, clipboard} = require("electron");
       const host = process.env.HOST || 'localhost';
       const protocol = useHttps ? 'https' : 'http';
       const port = Number(process.env.PORT || 8097);
@@ -182,10 +182,11 @@
       const defaultPort = (port === 443 && useHttps) || (port === 80 && !useHttps);
       const server = defaultPort ? `${protocol}://${host}` : `${protocol}://${host}:${port}`;
       const serverIp = defaultPort ? `${protocol}://${localIp}` : `${protocol}://${localIp}:${port}`;
+      const treePath = path.resolve(process.env.TREEPATH || '', "renderTree.json");
       const $ = document.querySelector.bind(document);
-      
+
       let timeoutID;
-      
+
       function selectAllAndCopy(event) {
         const element = event.target;
         if (window.getSelection) {
@@ -195,7 +196,7 @@
           selection.removeAllRanges();
           selection.addRange(range);
           clipboard.writeText(event.target.textContent);
-          
+
           const $promptDiv = $("#box-content-prompt");
           const $confirmationDiv = $("#box-content-confirmation");
           $promptDiv.classList.add('hidden');
@@ -224,17 +225,17 @@
           event.preventDefault();
           require('electron').shell.openExternal(link.href);
         });
-  
+
         const $localhost = $("#localhost");
         $localhost.innerText = `<script src="${server}"></` + 'script>';
         $localhost.addEventListener('click', selectAllAndCopy);
         $localhost.addEventListener('focus', selectAllAndCopy);
-  
+
         const $byIp = $("#byip");
         $byIp.innerText = `<script src="${serverIp}"></` + 'script>';
         $byIp.addEventListener('click', selectAllAndCopy);
         $byIp.addEventListener('focus', selectAllAndCopy);
-  
+
         const $profiler = $("#profiler");
         $profiler.addEventListener('click', openProfiler);
       };
@@ -262,7 +263,7 @@
           }
           if(status === "DevTools initialized." && getTree)
             setTimeout(() => getTree().then(renderTree => {
-              fs.writeFile("renderTree.json", JSON.stringify(renderTree, undefined, 2), err => {
+              fs.writeFile(treePath, JSON.stringify(renderTree, undefined, 2), err => {
                 if(!err)
                   remote.getCurrentWindow().close();
               });
