@@ -182,7 +182,7 @@
       const defaultPort = (port === 443 && useHttps) || (port === 80 && !useHttps);
       const server = defaultPort ? `${protocol}://${host}` : `${protocol}://${host}:${port}`;
       const serverIp = defaultPort ? `${protocol}://${localIp}` : `${protocol}://${localIp}:${port}`;
-      const treePath = path.resolve(process.env.TREEPATH || '', "renderTree.json");
+      const treePath = path.resolve((process.env.TREEPATH || '').trim(), "renderTree.json");
       const $ = document.querySelector.bind(document);
 
       let timeoutID;
