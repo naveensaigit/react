@@ -182,7 +182,10 @@
       const defaultPort = (port === 443 && useHttps) || (port === 80 && !useHttps);
       const server = defaultPort ? `${protocol}://${host}` : `${protocol}://${host}:${port}`;
       const serverIp = defaultPort ? `${protocol}://${localIp}` : `${protocol}://${localIp}:${port}`;
-      const treePath = path.resolve((process.env.TREEPATH || '').trim(), "renderTree.json");
+      const treePath = path.resolve(
+        process.env.RENDER_TREE_PATH || '',
+        process.env.RENDER_TREE_FILE || 'renderTree.json'
+      );
       const $ = document.querySelector.bind(document);
 
       let timeoutID;
@@ -267,7 +270,7 @@
                 if(!err)
                   remote.getCurrentWindow().close();
               });
-            }), 1000);
+            }), process.env.RENDER_TREE_WAIT || 1000);
         })
         .startServer(port, host, options);
     </script>

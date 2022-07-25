@@ -263,7 +263,6 @@ function initialize(socket: WebSocket) {
 
   log('Connected');
   statusListener('DevTools initialized.', 'devtools-connected');
-  // reload();
 }
 
 let startServerTimeoutID: TimeoutID | null = null;
