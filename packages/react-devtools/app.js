@@ -25,7 +25,7 @@ app.on('ready', function() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    show: false,
+    show: !(process.env.DEVTOOLS_HEADLESS || true),
     icon: join(__dirname, 'icons/icon128.png'),
     frame: false,
     //titleBarStyle: 'customButtonsOnHover',
@@ -139,11 +139,11 @@ app.on('ready', function() {
       ];
 
       store._bridge.send('updateComponentFilters', onlyFuncComps);
-      let delay = await delayExec(200);
+      let delay = await delayExec(${process.env.UPDATE_FILTERS});
       let reqTree = new Map(store._idToElement);
 
       store._bridge.send('updateComponentFilters', allComps);
-      delay = await delayExec(200);
+      delay = await delayExec(${process.env.UPDATE_FILTERS});
       let fullTree = new Map(store._idToElement);
 
       let renderTree = {}, promises = [], getSources = [], sourcePromises = [];
