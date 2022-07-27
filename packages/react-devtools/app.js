@@ -25,7 +25,7 @@ app.on('ready', function() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    show: !(process.env.DEVTOOLS_HEADLESS || true),
+    show: process.env.DEVTOOLS_HEADLESS !== "true",
     icon: join(__dirname, 'icons/icon128.png'),
     frame: false,
     //titleBarStyle: 'customButtonsOnHover',
@@ -54,14 +54,19 @@ app.on('ready', function() {
     // We use this so that RN can keep relative JSX __source filenames
     // but "click to open in editor" still works. js1 passes project roots
     // as the argument to DevTools.
-    `window.devtools.setProjectRoots(' + JSON.stringify(projectRoots) + ')
+    `window.devtools.setProjectRoots(' + JSON.stringify(projectRoots) + ');
+
+    function debugLog(...args) {
+      if(${process.env.DEVTOOLS_DEBUG === "true"})
+        console.log(...args);
+    }
 
     function delayExec(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     function getParentSource(parents) {
-      let promise = new Promise((resolve, _) => {
+      let promise = new Promise(resolve => {
         Promise.all(parents).then(sources => {
           for(let inspectedParent of sources)
             if(inspectedParent[0].source)
@@ -73,6 +78,7 @@ app.on('ready', function() {
     }
 
     async function getTree() {
+      debugLog("Starting to extract Render Tree!");
       let allComps = [
         {
           type: 1,
@@ -138,16 +144,19 @@ app.on('ready', function() {
         }
       ];
 
+      debugLog("Filtering Components to get only user-defined components");
       store._bridge.send('updateComponentFilters', onlyFuncComps);
-      let delay = await delayExec(${process.env.UPDATE_FILTERS});
+      let delay = await delayExec(${Number(process.env.UPDATE_FILTERS || 1000)});
       let reqTree = new Map(store._idToElement);
 
+      debugLog("Restoring Original Tree to find parents in case of missing source");
       store._bridge.send('updateComponentFilters', allComps);
-      delay = await delayExec(${process.env.UPDATE_FILTERS});
+      delay = await delayExec(${Number(process.env.UPDATE_FILTERS || 1000)});
       let fullTree = new Map(store._idToElement);
 
       let renderTree = {}, promises = [], getSources = [], sourcePromises = [];
 
+      debugLog("Inspecting each element in the render tree");
       for(let elm of reqTree.values()) {
         const rendererID = store.getRendererIDForElement(elm.id);
         promises.push(inspectElement({bridge: store._bridge, element: elm, path: null, rendererID}));
@@ -158,6 +167,7 @@ app.on('ready', function() {
       }
 
       let values = await Promise.all(promises);
+      debugLog("Inspected all elements successfully. Finding sources now.");
       for(let value of values) {
         if(!(value && value[0]))
           continue;
@@ -179,8 +189,9 @@ app.on('ready', function() {
         sourcePromises.push(getParentSource(parents));
       }
 
-      let renderTreePromise = new Promise((resolve, _) => {
+      let renderTreePromise = new Promise(resolve => {
         Promise.all(sourcePromises).then(sources => {
+          debugLog("Found all sources. Preparing render tree.");
           for(let i=0; i<sources.length; i++)
             renderTree[getSources[i]].source = sources[i];
           resolve(renderTree);
