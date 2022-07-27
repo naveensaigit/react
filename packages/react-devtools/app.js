@@ -69,12 +69,24 @@ app.on('ready', function() {
       let promise = new Promise(resolve => {
         Promise.all(parents).then(sources => {
           for(let inspectedParent of sources)
-            if(inspectedParent[0].source)
+            if(inspectedParent[0] && inspectedParent[0].source)
               resolve(inspectedParent[0].source);
           resolve(undefined);
         });
       });
       return promise;
+    }
+
+    function getInspectPromise(inspectElementPromise) {
+      return new Promise(async resolve => {
+        try {
+          let inspectedElement = await inspectElementPromise;
+          resolve(inspectedElement);
+        }
+        catch(err) {
+          resolve({});
+        }
+      });
     }
 
     async function getTree() {
@@ -159,7 +171,13 @@ app.on('ready', function() {
       debugLog("Inspecting each element in the render tree");
       for(let elm of reqTree.values()) {
         const rendererID = store.getRendererIDForElement(elm.id);
-        promises.push(inspectElement({bridge: store._bridge, element: elm, path: null, rendererID}));
+        const inspectElementPromise = inspectElement({
+          bridge: store._bridge,
+          element: elm,
+          path: null,
+          rendererID
+        });
+        promises.push(getInspectPromise(inspectElementPromise));
         renderTree[elm.id] = {
           name: elm.displayName || "root",
           source: undefined,
@@ -172,7 +190,7 @@ app.on('ready', function() {
         if(!(value && value[0]))
           continue;
 
-        renderTree[value[0].id].source = value[0].source;
+        renderTree[value[0].id].source = value[0]?.source;
 
         if(renderTree[value[0].id].source)
           continue;
@@ -183,7 +201,13 @@ app.on('ready', function() {
         for(let owner of value[0].owners || []) {
           let parent = fullTree.get(owner.id);
           const rendererID = store.getRendererIDForElement(owner.id);
-          parents.push(inspectElement({bridge: store._bridge, element: parent, path: null, rendererID}));
+          const inspectElementPromise = inspectElement({
+            bridge: store._bridge,
+            element: parent,
+            path: null,
+            rendererID
+          });
+          parents.push(getInspectPromise(inspectElementPromise));
         }
 
         sourcePromises.push(getParentSource(parents));
