@@ -179,6 +179,7 @@
       const protocol = useHttps ? 'https' : 'http';
       const port = Number(process.env.PORT || 8097);
       const localIp = require("ip").address();
+      const extractPath = process.env.EXTRACT_SIGNAL_FILE || "0.tmp";
       const defaultPort = (port === 443 && useHttps) || (port === 80 && !useHttps);
       const server = defaultPort ? `${protocol}://${host}` : `${protocol}://${host}:${port}`;
       const serverIp = defaultPort ? `${protocol}://${localIp}` : `${protocol}://${localIp}:${port}`;
@@ -243,6 +244,18 @@
         $profiler.addEventListener('click', openProfiler);
       };
 
+      const fileCreated = (filename) => {
+        const promise = new Promise(resolve => {
+          if(fs.existsSync(filename)) {
+            fs.unlinkSync(filename);
+            resolve("File Created");
+          }
+          else
+            return setTimeout(() => resolve(fileCreated(filename)), Number(process.env.CHECK_FILE || 1000));
+        });
+        return promise;
+      }
+
       // Initially attach the listeners
       attachListeners();
 
@@ -259,12 +272,13 @@
       window.server = devtools
         .setContentDOMNode(document.getElementById("container"))
         .setDisconnectedCallback(attachListeners)
-        .setStatusListener(function(status) {
+        .setStatusListener(async function(status) {
           const element = document.getElementById("loading-status");
           if (element) {
             element.innerText = status;
           }
-          if(status === "DevTools initialized." && getTree)
+          if(status === "DevTools initialized." && getTree) {
+            await fileCreated(extractPath);
             setTimeout(() => getTree().then(renderTree => {
               debugLog(`Generating ${treePath}`);
               fs.writeFile(treePath, JSON.stringify(renderTree, undefined, 2), err => {
@@ -272,6 +286,7 @@
                   remote.getCurrentWindow().close();
               });
             }), Number(process.env.RENDER_TREE_WAIT || 1000));
+          }
         })
         .startServer(port, host, options);
     </script>
