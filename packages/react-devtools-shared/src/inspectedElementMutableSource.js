@@ -170,6 +170,7 @@ export function inspectElement({
   });
 }
 
+// Make inspectElement accessible globally
 global.inspectElement = inspectElement;
 
 export function clearCacheForTests(): void {

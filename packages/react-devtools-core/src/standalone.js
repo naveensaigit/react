@@ -253,16 +253,20 @@ function initialize(socket: WebSocket) {
   ((bridge: any): FrontendBridge).addListener('shutdown', () => {
     socket.close();
   });
+  // Make the bridge accessible globally
   global.bridge = bridge;
 
   store = new Store(bridge, {
     checkBridgeProtocolCompatibility: true,
     supportsNativeInspection: false,
   });
+  // Make the store accessible globally
   global.store = store;
 
   log('Connected');
   statusListener('DevTools initialized.', 'devtools-connected');
+
+  // Don't call the render() function rendering the frontend for DevTools
 }
 
 let startServerTimeoutID: TimeoutID | null = null;

@@ -179,10 +179,12 @@
       const protocol = useHttps ? 'https' : 'http';
       const port = Number(process.env.PORT || 8097);
       const localIp = require("ip").address();
+      // Path of the file created when user presses the extract key
       const extractPath = process.env.EXTRACT_SIGNAL_FILE || "0.tmp";
       const defaultPort = (port === 443 && useHttps) || (port === 80 && !useHttps);
       const server = defaultPort ? `${protocol}://${host}` : `${protocol}://${host}:${port}`;
       const serverIp = defaultPort ? `${protocol}://${localIp}` : `${protocol}://${localIp}:${port}`;
+      // Path where render tree object must be saved
       const treePath = path.resolve(
         process.env.RENDER_TREE_PATH || '',
         process.env.RENDER_TREE_FILE || 'renderTree.json'
@@ -277,14 +279,19 @@
           if (element) {
             element.innerText = status;
           }
+          // If DevTools is initialized and the inline javascript is executed
           if(status === "DevTools initialized." && getTree) {
+            // Wait for the extract signal file to be created
             await fileCreated(extractPath);
             setTimeout(() => getTree().then(renderTree => {
               debugLog(`Generating ${treePath}`);
+              // Write the render tree object to the desired path
               fs.writeFile(treePath, JSON.stringify(renderTree, undefined, 2), err => {
+                // If no errors, close the DevTools Desktop app
                 if(!err)
                   remote.getCurrentWindow().close();
               });
+              // Wait for desired time interval after page load to extract tree
             }), Number(process.env.RENDER_TREE_WAIT || 1000));
           }
         })
