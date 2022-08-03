@@ -1,3 +1,4 @@
+/* eslint-disable react-internal/no-primitive-constructors */
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -12,6 +13,7 @@
  const os = require('os');
 
  const argv = require('minimist')(process.argv.slice(2));
+ // eslint-disable-next-line no-unused-vars
  const projectRoots = argv._;
 
  let mainWindow = null;
@@ -25,7 +27,7 @@
    mainWindow = new BrowserWindow({
      width: 800,
      height: 600,
-     show: process.env.DEVTOOLS_HEADLESS !== "true",
+     show: process.env.DEVTOOLS_HEADLESS !== 'true',
      icon: join(__dirname, 'icons/icon128.png'),
      frame: false,
      //titleBarStyle: 'customButtonsOnHover',
@@ -59,7 +61,7 @@
      // Function to print debug log statements
      function debugLog(...args) {
       // If debug log env variable is set to true
-      if(${process.env.DEVTOOLS_DEBUG === "true"})
+      if(${process.env.DEVTOOLS_DEBUG === 'true'})
          console.log(...args);
      }
 
